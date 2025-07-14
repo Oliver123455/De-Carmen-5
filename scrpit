@@ -1,0 +1,38 @@
+const cursos = {
+  "ECONOMÍA I": ["ECONOMÍA II", "TEORÍA MICROECONÓMICA I"],
+  "MATEMÁTICA I": ["MATEMÁTICA II", "ESTADISTICA DESCRIPTIVA"],
+  "INTRODUCCION A LOS NEGOCIOS GLOBALES": ["PLANEAMIENTO ESTRATÉGICO (E)", "GERENCIA DE NEGOCIOS INTERNACIONALES (E)", "MARKETING PARA EL COMERCIO EXTERIOR (E)"],
+  "TÉCNICAS DE REDACCIÓN Y COMUNICACIÓN": [],
+  "METODOLOGÍA DE LA INVESTIGACIÓN": [],
+  "ALGEBRA LINEAL": ["MATEMÁTICA II", "ESTADISTICA DESCRIPTIVA"],
+  // Agrega todos los cursos y dependencias aquí
+};
+
+const estados = {};
+
+function crearCurso(nombre) {
+  const div = document.createElement('div');
+  div.className = 'curso bloqueado';
+  div.innerText = nombre;
+  div.onclick = () => {
+    if (div.classList.contains('bloqueado')) return;
+    div.classList.toggle('aprobado');
+    estados[nombre] = div.classList.contains('aprobado');
+    actualizarDisponibilidad();
+  };
+  document.getElementById('malla').appendChild(div);
+  estados[nombre] = false;
+}
+
+function actualizarDisponibilidad() {
+  const bloques = document.querySelectorAll('.curso');
+  bloques.forEach(b => {
+    const nombre = b.innerText;
+    const requisitos = Object.keys(cursos).filter(k => cursos[k].includes(nombre));
+    const desbloqueado = requisitos.every(req => estados[req]);
+    b.classList.toggle('bloqueado', !desbloqueado && !estados[nombre]);
+  });
+}
+
+Object.keys(cursos).forEach(crearCurso);
+actualizarDisponibilidad();
